@@ -94,8 +94,11 @@ void Slot_GD::_updateColor() {
 	color.b = _colorTransform.blueMultiplier;
 	color.a = _colorTransform.alphaMultiplier;
 
-	ERR_FAIL_NULL(get_display());
-	get_display()->queue_redraw();
+	Display *display = get_display();
+	if (display == nullptr) {
+		return;
+	}
+	display->queue_redraw();
 }
 
 void Slot_GD::_initDisplay(void *value, bool isRetain) {
@@ -123,8 +126,11 @@ void Slot_GD::_onUpdateDisplay() {}
 void Slot_GD::_addDisplay() {}
 
 void Slot_GD::_replaceDisplay(void *value, bool isArmatureDisplay) {
-	ERR_FAIL_NULL(get_display());
-	get_display()->queue_redraw();
+	Display *display = get_display();
+	if (display == nullptr) {
+		return;
+	}
+	display->queue_redraw();
 }
 
 void Slot_GD::_removeDisplay() {
