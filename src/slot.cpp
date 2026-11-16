@@ -351,12 +351,18 @@ void Slot_GD::_identityTransform() {
 void Slot_GD::_updateTransform() {
 	Vector2 pos = Vector2(0, 0);
 	auto display = get_display();
+	// 子骨架内部的槽位会各自完成 DragonBones -> Godot 的 Y 轴翻转。
+	// 父槽位只传递自身变换，避免与子槽位矩阵叠加成二次翻转。
+	real_t axis_y_x = -globalTransformMatrix.c;
+	real_t axis_y_y = -globalTransformMatrix.d;
 	if (display == _rawDisplay || display == _meshDisplay) {
 		pos.x = globalTransformMatrix.tx - (globalTransformMatrix.a * _pivotX + globalTransformMatrix.c * _pivotY);
 		pos.y = globalTransformMatrix.ty - (globalTransformMatrix.b * _pivotX + globalTransformMatrix.d * _pivotY);
 	} else if (_childArmature) {
 		pos.x = globalTransformMatrix.tx;
 		pos.y = globalTransformMatrix.ty;
+		axis_y_x = globalTransformMatrix.c;
+		axis_y_y = globalTransformMatrix.d;
 	} else {
 		Vector2 anchorPoint(1.f, 1.f);
 
@@ -367,8 +373,8 @@ void Slot_GD::_updateTransform() {
 	Transform2D matrix{
 		globalTransformMatrix.a * _textureScale,
 		globalTransformMatrix.b * _textureScale,
-		-globalTransformMatrix.c * _textureScale,
-		-globalTransformMatrix.d * _textureScale,
+		axis_y_x * _textureScale,
+		axis_y_y * _textureScale,
 		pos.x * _textureScale,
 		pos.y * _textureScale
 	};
